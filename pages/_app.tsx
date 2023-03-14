@@ -1,5 +1,6 @@
 import '@/styles/globals.scss';
 import 'normalize.css';
+import { Analytics } from '@vercel/analytics/react';
 
 // code hight
 import 'highlight.js/styles/atom-one-dark.css';
@@ -19,5 +20,10 @@ export default function App({ Component, pageProps }: AppProps) {
             app.style.height = window.innerHeight + 'px';
         }
     }, []);
-    return <Component {...pageProps} />;
+    return (
+        <>
+          <Component {...pageProps} />
+          <Analytics />
+        </>
+      );
 }
