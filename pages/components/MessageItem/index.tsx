@@ -145,7 +145,7 @@ const MessageItem: React.FC<{
             )}
             {showRetry && onRetry && (
                 <div className={styles.regenerateBtn} onClick={onRetry}>
-                    Regenerate
+                    更换 API KEY
                 </div>
             )}
         </div>

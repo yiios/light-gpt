@@ -37,19 +37,19 @@ import {
 
 const SystemMenus = [
     {
-        label: 'Robot Avatar Settings',
+        label: 'AI 头像设置',
         value: SystemSettingMenu.robotAvatarSettings,
     },
     {
-        label: 'User Avatar Settings',
+        label: '用户头像设置',
         value: SystemSettingMenu.userAvatarSettings,
     },
     {
-        label: 'System Role Settings',
+        label: '系统角色设置',
         value: SystemSettingMenu.systemRoleSettings,
     },
     {
-        label: 'API KEY Settings',
+        label: 'API KEY 设置',
         value: SystemSettingMenu.apiKeySettings,
     },
 ];
@@ -98,7 +98,7 @@ export default function Home() {
 
     const convertToPDF = () => {
         if (messageList.length === 0) {
-            toast.warn('No question and answer content available', {
+            toast.warn('没有对话内容', {
                 autoClose: 1000,
             });
             return;
@@ -131,7 +131,7 @@ export default function Home() {
 
     const convertToImage = () => {
         if (messageList.length === 0) {
-            toast.warn('No question and answer content available', {
+            toast.warn('没有对话内容', {
                 autoClose: 1000,
             });
             return;
@@ -218,7 +218,7 @@ export default function Home() {
 
     const chatGPTTurboWithLatestUserPrompt = async (isRegenerate = false) => {
         if (!apiKey) {
-            toast.error('Please set API KEY', {
+            toast.error('请设置 API KEY', {
                 autoClose: 3000,
             });
             setSystemMenuVisible(true);
@@ -228,7 +228,7 @@ export default function Home() {
 
         // 先把用户输入信息展示到对话列表
         if (!isRegenerate && !currentUserMessage) {
-            toast.warn('Please  Enter your question', { autoClose: 1000 });
+            toast.warn('请输入你的问题', { autoClose: 1000 });
             return;
         }
 
@@ -408,11 +408,11 @@ export default function Home() {
             </div>
             <div className={styles.header}>
                 <div className={styles.title}>
-                    <span className={styles.item}>Light</span>
-                    <span className={styles.item}>GPT</span>
+                    <span className={styles.item}>ai.yiios.com</span>
+                    <span className={styles.item}>GPT 镜像站</span>
                 </div>
                 <div className={styles.description}>
-                    Based on OpenAI API(gpt-3.5-turbo)
+                    基于 OpenAI API(gpt-3.5-turbo)
                 </div>
                 <div className={styles.menus}>
                     <div
@@ -439,10 +439,10 @@ export default function Home() {
                     ></i>
 
                     <i
-                        className="fab fa-github"
+                        className="fas fa-comment-dots"
                         onClick={() => {
                             window.open(
-                                'https://github.com/riwigefi/light-gpt',
+                                'https://yiios.com/post/about/',
                                 '_blank'
                             );
                         }}
@@ -508,7 +508,7 @@ export default function Home() {
                                         }
                                     }}
                                 >
-                                    Stop
+                                    停止
                                 </div>
                             ) : (
                                 <div
@@ -517,7 +517,7 @@ export default function Home() {
                                         chatGPTTurboWithLatestUserPrompt(true)
                                     }
                                 >
-                                    Regenerate
+                                    重新生成回答
                                 </div>
                             )}
                         </div>
@@ -543,8 +543,8 @@ export default function Home() {
                             }}
                             placeholder={
                                 loading
-                                    ? 'gpt is thinking...'
-                                    : 'ask gpt for anything...'
+                                    ? 'GPT 正在思考...'
+                                    : '向 GPT 问任何事...'
                             }
                             rows={1}
                             onKeyDown={(event) => {
@@ -617,7 +617,7 @@ export default function Home() {
                                 }
                             }}
                         >
-                            Stop
+                            停止
                         </div>
                     ) : (
                         <div
@@ -626,7 +626,7 @@ export default function Home() {
                                 chatGPTTurboWithLatestUserPrompt(true)
                             }
                         >
-                            Regenerate
+                            重新生成回答
                         </div>
                     )}
                 </div>
@@ -643,7 +643,7 @@ export default function Home() {
                     onClick={() => {
                         if (messageList.length === 0) {
                             toast.warn(
-                                'No question and answer content available',
+                                '没有对话内容',
                                 { autoClose: 1000 }
                             );
                             return;
@@ -669,7 +669,7 @@ export default function Home() {
                     {activeSystemMenu ===
                         SystemSettingMenu.robotAvatarSettings && (
                         <AvatarUploader
-                            title="Robot Avatar Settings"
+                            title="AI对话头像设置"
                             img={robotAvatar}
                             updateAvatar={updateRobotAvatar}
                         />
@@ -677,7 +677,7 @@ export default function Home() {
                     {activeSystemMenu ===
                         SystemSettingMenu.userAvatarSettings && (
                         <AvatarUploader
-                            title="User Avatar Settings"
+                            title="用户对话头像设置"
                             img={userAvatar}
                             updateAvatar={updateUserAvatar}
                         />
@@ -685,9 +685,9 @@ export default function Home() {
                     {activeSystemMenu ===
                         SystemSettingMenu.systemRoleSettings && (
                         <div className={styles.systemRoleSettings}>
-                            <label htmlFor="systemRole">System Role</label>
+                            <label htmlFor="systemRole">系统角色设定</label>
                             <textarea
-                                placeholder="Enter system role here"
+                                placeholder="在此输入系统角色设定"
                                 id="systemRole"
                                 value={tempSystemRoleValue}
                                 rows={4}
@@ -697,23 +697,21 @@ export default function Home() {
                             ></textarea>
 
                             <div className={styles.description}>
-                                System role refers to the role identity in the
-                                generated text, which can be different
-                                characters, robots, or other entities. By
-                                setting different system roles, you can control
-                                the emotions and tone of the generated text to
-                                better adapt to the needs of specific scenarios.
+                                系统角色是指生成文本中的角色标识，
+                                可以是不同的角色、机器人或其他实体。
+                                通过设置不同的系统角色，可以控制生成文本的情绪和语气，
+                                更好地适应特定场景的需求。
                             </div>
 
                             <div className={styles.benefits}>
-                                Do not know how to define system role? Come{' '}
+                                不知道如何定义系统角色？点击获取{' '}
                                 <Link
                                     href="https://github.com/f/awesome-chatgpt-prompts"
                                     target="_blank"
                                 >
                                     Awesome ChatGPT Prompts
                                 </Link>{' '}
-                                to choose the system role you want
+                                来选择你想要的系统角色
                             </div>
                             <div className={styles.btnContainer}>
                                 <button
@@ -730,7 +728,7 @@ export default function Home() {
                                             ThemeLocalKey,
                                             tempSystemRoleValue
                                         );
-                                        toast.success('Successful update', {
+                                        toast.success('更新成功', {
                                             autoClose: 1000,
                                         });
                                     }}
@@ -744,7 +742,7 @@ export default function Home() {
                         <div className={styles.systemRoleSettings}>
                             <label htmlFor="apiKey">Open AI API Key</label>
                             <input
-                                placeholder="Enter your open ai api key"
+                                placeholder="输入你的 API KEY"
                                 id="apiKey"
                                 value={tempApiKeyValue}
                                 onChange={(e) => {
@@ -753,32 +751,36 @@ export default function Home() {
                             ></input>
 
                             <div className={styles.description}>
-                                Please enter your API key, which will ensure
-                                that your assistant runs faster and better.
+                            请输入你的API密钥，这将确保你能使用 Chat GPT 镜像站。
                                 <strong>
-                                    Rest assured that the API key you enter will
-                                    not be uploaded to our server, but will only
-                                    be stored locally in your browser, with no
-                                    risk of leakage. We will do our utmost to
-                                    protect your privacy and data security.
+                                    请放心，你输入的API密钥不会被上传到我们的服务器，
+                                    而只会在你的浏览器中本地存储，没有泄露的风险。
+                                    我们将尽最大努力保护您的隐私和数据安全。
                                 </strong>
                             </div>
 
                             <div className={styles.benefits}>
-                                Do not know how to get your api key?If you have
-                                a Open AI account, please visit{' '}
+                                不知道如何获得你的 API KEY？ 
+                                <br></br>
+                                1. 如果你有一个 Open AI账户，请访问{' '}
                                 <Link
                                     href="https://platform.openai.com/account/api-keys"
                                     target="_blank"
                                 >
                                     Open AI Platform API keys
                                 </Link>{' '}
-                                to to view your API key list.If you do not have
-                                a chatGPT account, please click the button below
-                                to get a temporary API key, which may have slow
-                                access speed. Therefore, to ensure faster
-                                conversation, please use your own API key as
-                                much as possible.
+                                来查看你的API key。
+                                <br></br>
+                                2. 如果你没有 ChatGPT 账户, 请访问{' '}
+                                <Link
+                                    href="https://shop.yiios.com"
+                                    target="_blank"
+                                >
+                                    购买链接
+                                </Link>{' '}
+                                获取 ChatGPT 账户和 API KEY。
+                                <br></br>
+                                很抱歉：因为站长的账号额度耗尽，目前无 Key 用户无法使用镜像站。
                             </div>
                             <div className={styles.btnContainer}>
                                 <button
