@@ -499,7 +499,6 @@ export default function Home() {
                                         }
                                         setActiveTopicId(item.id);
                                         // 找出历史对话
-
                                         setIsGenerateFile(true);
                                         const messageList =
                                             await chatDB.getConversationsByTopicId(
@@ -508,6 +507,7 @@ export default function Home() {
                                         setMessageList(
                                             messageList as IMessage[]
                                         );
+
                                         setIsGenerateFile(false);
                                     }}
                                 >
@@ -515,6 +515,27 @@ export default function Home() {
                                     <div className={styles.topicName}>
                                         {item.name}
                                     </div>
+                                    <i
+                                        className={`fas fa-times ${styles.remove}`}
+                                        onClick={async () => {
+                                            await chatDB.deleteTopicById(
+                                                item.id
+                                            );
+                                            setHistoryTopicList((list) =>
+                                                list.filter(
+                                                    (o) => o.id !== item.id
+                                                )
+                                            );
+                                            setMessageList([]);
+                                            setActiveTopicId('');
+                                            toast.success(
+                                                'Successful deleted topic',
+                                                {
+                                                    autoClose: 1000,
+                                                }
+                                            );
+                                        }}
+                                    ></i>
                                 </div>
                             );
                         })}
