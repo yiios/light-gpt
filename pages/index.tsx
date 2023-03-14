@@ -94,12 +94,6 @@ export default function Home() {
     const [tempApiKeyValue, setTempApiKeyValue] = useState('');
     const [apiKey, setApiKey] = useState('');
 
-    // 迁移旧镜像站的key
-    const [setting, setSetting] = useState<Setting>({ apiKey: null });
-    type Setting = {
-        apiKey: string | null;
-    };
-      
     const chatHistoryEle = useRef<HTMLDivElement | null>(null);
 
     const convertToPDF = () => {
@@ -381,10 +375,6 @@ export default function Home() {
                 content: light_gpt_system_role,
                 id: uuid(),
             });
-        }
-        if (setting.apiKey !== null && setting.apiKey.length > 0) {
-            setApiKey(setting.apiKey);
-            setSetting(prevSetting => ({ ...prevSetting, apiKey: null }));
         }
         const light_gpt_api_key =
             window.localStorage.getItem(APIKeyLocalKey) || '';
