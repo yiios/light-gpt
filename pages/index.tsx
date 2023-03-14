@@ -744,7 +744,7 @@ export default function Home() {
                             <input
                                 placeholder="输入你的 API KEY"
                                 id="apiKey"
-                                value={apiKey}
+                                value={tempApiKeyValue}
                                 onChange={(e) => {
                                     setTempApiKeyValue(e.target.value);
                                 }}
