@@ -19,9 +19,12 @@ export default async function handler(
 
         const options = {
             headers: {
+                'Access-Control-Allow-Origin': '*',
+                "Access-Control-Allow-Methods": "POST,GET",
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${apiKey}`,
             },
+            mode: 'cors',
             method: 'POST',
             timeout: 8000,
             body: JSON.stringify({
@@ -34,7 +37,7 @@ export default async function handler(
 
         try {
             const proxyRes = await fetch(
-                `https://api.openai.com/v1/chat/completions`,
+                `https://chatgpt.yiios.com:8443/v1/chat/completions`,
                 options
             );
             if (!proxyRes.body) {

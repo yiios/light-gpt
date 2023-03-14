@@ -8,9 +8,12 @@ export const chatWithGptTurbo = async (
 ) => {
     const requestInit: RequestInit = {
         headers: {
+            'Access-Control-Allow-Origin': '*',
+            "Access-Control-Allow-Methods": "POST,GET",
             'Content-Type': 'application/json',
             Authorization: `Bearer ${apiKey}`,
         },
+        mode: 'cors',
         method: 'POST',
         body: JSON.stringify({
             model: 'gpt-3.5-turbo',
@@ -26,7 +29,7 @@ export const chatWithGptTurbo = async (
 
     try {
         const res = await fetch(
-            `https://api.openai.com/v1/chat/completions`,
+            `https://chatgpt.yiios.com:8443/v1/chat/completions`,
             requestInit
         ).then(async (response) => {
             if (!response.ok) {
