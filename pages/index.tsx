@@ -53,7 +53,7 @@ const SystemMenus = [
         value: SystemSettingMenu.systemRoleSettings,
     },
     {
-        label: 'API KEY 设置',
+        label: 'API Key 设置',
         value: SystemSettingMenu.apiKeySettings,
     },
 ];
@@ -232,7 +232,7 @@ export default function Home() {
 
     const chatGPTTurboWithLatestUserPrompt = async (isRegenerate = false) => {
         if (!apiKey) {
-            toast.error('请设置 API KEY', {
+            toast.error('请设置 API Key', {
                 autoClose: 3000,
             });
             setSystemMenuVisible(true);
@@ -500,7 +500,7 @@ export default function Home() {
                     }}
                 >
                     <i className="fas fa-plus"></i>
-                    <span>New Chat</span>
+                    <span>开启新对话</span>
                 </div>
                 <div className={styles.historyTopicList}>
                     <div className={styles.inner}>
@@ -584,9 +584,18 @@ export default function Home() {
                     <span className={styles.item}>ai.yiios.com</span>
                     <span className={styles.item}>GPT 镜像站</span>
                 </div>
-                <div className={styles.description}>
-                    基于 OpenAI API(gpt-3.5-turbo)
-                </div>
+                {apiKey ? (
+                    <div className={styles.description}>
+                        基于 OpenAI API(gpt-3.5-turbo)
+                    </div>
+                ) : (
+                    <div className={styles.description}>
+                        基于 OpenAI API(gpt-3.5-turbo)
+                        <Link href="https://io.yiios.com" target="_blank">
+                            API Key 购买链接(独享账号，单价6元)
+                        </Link>
+                    </div>
+                )}
                 <div className={styles.menus}>
                     <div
                         className="themeToggleBtn"
@@ -916,7 +925,7 @@ export default function Home() {
                         <div className={styles.systemRoleSettings}>
                             <label htmlFor="apiKey">Open AI API Key</label>
                             <input
-                                placeholder="输入你的 API KEY"
+                                placeholder="输入你的 API Key"
                                 id="apiKey"
                                 value={tempApiKeyValue}
                                 onChange={(e) => {
@@ -925,7 +934,7 @@ export default function Home() {
                             ></input>
 
                             <div className={styles.description}>
-                            请输入你的API密钥，这将确保你能使用 Chat GPT 镜像站。
+                                请输入你的API密钥，这将确保你能使用 Chat GPT 镜像站。
                                 <strong>
                                     请放心，你输入的API密钥不会被上传到我们的服务器，
                                     而只会在你的浏览器中本地存储，没有泄露的风险。
@@ -934,25 +943,25 @@ export default function Home() {
                             </div>
 
                             <div className={styles.benefits}>
-                                不知道如何获得你的 API KEY？ 
+                                不知道如何获得你的 API Key？
                                 <br></br>
                                 1. 如果你有一个 Open AI账户，请访问{' '}
                                 <Link
                                     href="https://platform.openai.com/account/api-keys"
                                     target="_blank"
                                 >
-                                    Open AI Platform API keys
+                                    Open AI Platform API Keys
                                 </Link>{' '}
-                                来查看你的API key。
+                                来查看你的API Key。
                                 <br></br>
                                 2. 如果你没有 ChatGPT 账户, 请访问{' '}
                                 <Link
-                                    href="https://shop.yiios.com"
+                                    href="https://io.yiios.com"
                                     target="_blank"
                                 >
                                     购买链接
                                 </Link>{' '}
-                                获取 ChatGPT 账户和 API KEY。
+                                获取 ChatGPT 账户和 API Key。
                                 <br></br>
                                 很抱歉：因为站长的账号额度耗尽，目前无 Key 用户无法使用镜像站。
                             </div>
