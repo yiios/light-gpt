@@ -592,7 +592,7 @@ export default function Home() {
                     <div className={styles.description}>
                         基于 OpenAI API(gpt-3.5-turbo)
                         <Link href="https://shop.yiios.com" target="_blank">
-                            API Key 购买链接(独享账号，单价6元)
+                            API Key 购买链接
                         </Link>
                     </div>
                 )}
