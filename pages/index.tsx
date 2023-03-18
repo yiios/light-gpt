@@ -591,7 +591,7 @@ export default function Home() {
                 ) : (
                     <div className={styles.description}>
                         基于 OpenAI API(gpt-3.5-turbo)
-                        <Link href="https://io.yiios.com" target="_blank">
+                        <Link href="https://shop.yiios.com" target="_blank">
                             API Key 购买链接(独享账号，单价6元)
                         </Link>
                     </div>
@@ -956,7 +956,7 @@ export default function Home() {
                                 <br></br>
                                 2. 如果你没有 ChatGPT 账户, 请访问{' '}
                                 <Link
-                                    href="https://io.yiios.com"
+                                    href="https://shop.yiios.com"
                                     target="_blank"
                                 >
                                     购买链接
