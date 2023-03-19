@@ -1025,7 +1025,7 @@ export default function Home() {
 
             {showPopup && (
                 <div className={styles.loading}>
-                    <img src="https://cdn.jsdelivr.net/gh/yiios/oss_img/wx_qr.png" alt="popup" />
+                    <img src="https://cardocr-1251789346.cos.ap-guangzhou.myqcloud.com/wx_qr.png" alt="popup" />
                     <button onClick={handleConfirm}>确认</button>
                 </div>
                 )
