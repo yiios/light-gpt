@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useRef, useState } from 'react';
 
 import { throttle } from 'lodash';
@@ -462,6 +463,22 @@ export default function Home() {
 
     const [historyTopicListVisible, setHistoryTopicListVisible] =
         useState(true);
+
+            
+    const [showPopup, setShowPopup] = useState(false);
+
+    const handleConfirm = () => {
+        localStorage.setItem("popupShown", JSON.stringify(true));
+        setShowPopup(false);
+      };
+    
+      useEffect(() => {
+        const isPopupShown = JSON.parse(localStorage.getItem("popupShown") || "false");
+        if (!isPopupShown) {
+          setShowPopup(true);
+        }
+      }, []);
+    
 
     return (
         <div id="app" className={styles.app} data-theme={theme}>
@@ -1005,6 +1022,15 @@ export default function Home() {
                     <div className={styles.loadingSpinner}></div>
                 </div>
             )}
+
+            {showPopup && (
+                <div className={styles.loading}>
+                    <img src="https://cdn.jsdelivr.net/gh/yiios/oss_img/wx_qr.png" alt="popup" />
+                    <button onClick={handleConfirm}>确认</button>
+                </div>
+                )
+            }
+
         </div>
     );
 }
