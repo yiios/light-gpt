@@ -581,8 +581,9 @@ export default function Home() {
             </div>
             <div className={styles.header}>
                 <div className={styles.title} onClick={async () => {}}>
-                    <span className={styles.item}>ai.yiios.com</span>
-                    <span className={styles.item}>GPT 镜像站</span>
+                    {/* <span className={styles.item}>ai.yiios.com</span> */}
+                    {/* <span className={styles.item}>GPT 镜像站)</span> */}
+                    <span className={styles.item}>❌目前OpenAPI上游故障，请等待，会第一时间修复解决</span>
                 </div>
                 {apiKey ? (
                     <div className={styles.description}>
