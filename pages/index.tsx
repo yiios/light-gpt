@@ -23,7 +23,11 @@ import HeadMeatSetup from './components/HeadMetaSetup';
 import MessageItem from './components/MessageItem';
 import AvatarUploader from './components/AvatarUploader';
 
-import { chatWithGptTurbo, chatWithGptTurboByProxy } from '../open.ai.service';
+import {
+    chatWithGptTurbo,
+    chatWithGptTurboByProxy,
+    getCurrentApiKeyBilling,
+} from '../open.ai.service';
 
 import { Theme, SystemSettingMenu, ERole, IMessage } from '../interface';
 
@@ -104,7 +108,25 @@ export default function Home() {
     type Setting = {
         apiKey: string | null;
     };
-      
+    const [currentApiKeyBilling, setCurrentApiKeyBilling] = useState({
+        totalGranted: 0,
+        totalAvailable: 0,
+        totalUsed: 0,
+    });
+
+    useEffect(() => {
+        if (!apiKey) return;
+        getCurrentApiKeyBilling(apiKey).then((res) => {
+            if (res.total_granted) {
+                setCurrentApiKeyBilling({
+                    totalGranted: res.total_granted,
+                    totalAvailable: res.total_available,
+                    totalUsed: res.total_used,
+                });
+            }
+        });
+    }, [apiKey]);
+
     const chatHistoryEle = useRef<HTMLDivElement | null>(null);
 
     const convertToPDF = () => {
@@ -597,6 +619,7 @@ export default function Home() {
                 ))}
             </div>
             <div className={styles.header}>
+
                 <div className={styles.title} onClick={async () => {}}>
                     <span className={styles.item}>ai.yiios.com</span>
                     <span className={styles.item}>GPT 镜像站)</span>
@@ -942,6 +965,28 @@ export default function Home() {
                     {activeSystemMenu === SystemSettingMenu.apiKeySettings && (
                         <div className={styles.systemRoleSettings}>
                             <label htmlFor="apiKey">Open AI API Key</label>
+                            <div className={styles.description}>
+                                <div>
+                                    当前 API Key 总金额 :{' '}
+                                    {apiKey
+                                    ? currentApiKeyBilling.totalGranted.toFixed(3)
+                                    : 0}
+                                    美金
+                                </div>
+                                <div>
+                                    当前 API Key 可用 :{' '}
+                                    {apiKey
+                                    ? currentApiKeyBilling.totalAvailable.toFixed(3)
+                                    : 0}
+                                    美金
+                                </div>
+                                <div>
+                                    当前 API Key 已使用 :{' '}
+                                    {apiKey ? currentApiKeyBilling.totalUsed.toFixed(3) : 0}
+                                    美金
+                                </div>
+                            </div>
+
                             <input
                                 placeholder="输入你的 API Key"
                                 id="apiKey"
@@ -950,7 +995,6 @@ export default function Home() {
                                     setTempApiKeyValue(e.target.value);
                                 }}
                             ></input>
-
                             <div className={styles.description}>
                                 请输入你的API密钥，这将确保你能使用 Chat GPT 镜像站。
                                 <strong>
