@@ -876,6 +876,14 @@ export default function Home() {
                 ></i>
                 <i className="fas fa-image" onClick={convertToImage}></i>
                 <i className="fas fa-file-pdf" onClick={convertToPDF}></i>
+                {loading ? (<i></i>) : (
+                    <i
+                        className="fas fa-paper-plane"
+                        onClick={() =>
+                            chatGPTTurboWithLatestUserPrompt(false)
+                        }
+                    ></i>
+                )}
             </div>
 
             {/** 模态框 */}
