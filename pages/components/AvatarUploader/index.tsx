@@ -112,7 +112,7 @@ const AvatarUploader: React.FC<{
                 />
             </div>
             <button className={styles.saveButton} onClick={handleSave}>
-                save
+                保存
             </button>
         </div>
     );

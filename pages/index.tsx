@@ -502,6 +502,8 @@ export default function Home() {
       }, []);
     
 
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
     return (
         <div id="app" className={styles.app} data-theme={theme}>
             <HeadMeatSetup></HeadMeatSetup>
@@ -859,8 +861,6 @@ export default function Home() {
                     !messageList.length && styles.noMessage
                 }`}
             >
-                <i className="fas fa-image" onClick={convertToImage}></i>
-                <i className="fas fa-file-pdf" onClick={convertToPDF}></i>
                 <i
                     className="fas fa-trash-alt"
                     onClick={() => {
@@ -871,9 +871,11 @@ export default function Home() {
                             );
                             return;
                         }
-                        setMessageList([]);
+                        setShowDeleteConfirm(true);
                     }}
                 ></i>
+                <i className="fas fa-image" onClick={convertToImage}></i>
+                <i className="fas fa-file-pdf" onClick={convertToPDF}></i>
             </div>
 
             {/** 模态框 */}
@@ -957,7 +959,7 @@ export default function Home() {
                                         });
                                     }}
                                 >
-                                    Save
+                                    保存
                                 </button>
                             </div>
                         </div>
@@ -1043,7 +1045,7 @@ export default function Home() {
                                         });
                                     }}
                                 >
-                                    Save
+                                    保存
                                 </button>
                                 {/* <button
                                     className={styles.saveButton}
@@ -1074,6 +1076,49 @@ export default function Home() {
                 </div>
                 )
             }
+
+            {showDeleteConfirm && (
+                <div className={styles.loading}>
+
+                    <div style={{
+                        backgroundColor: 'white',
+                        padding: '20px',
+                        borderRadius: '10px'
+                    }}>
+                        <div style={{
+                            fontSize: '18px',
+                            marginBottom: '10px'
+                        }}>
+                            确定要删除所有对话内容吗？
+                        </div>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between'
+                        }}>
+                            <button style={{
+                                width: '45%',
+                                backgroundColor: 'transparent',
+                                borderRadius: '5px'
+                            }} onClick={() => {
+                                setShowDeleteConfirm(false);
+                            }}>
+                                取消
+                            </button>
+                            <button style={{
+                                width: '45%',
+                                backgroundColor: 'transparent',
+                                borderRadius: '5px'
+                            }} onClick={() => {
+                                setMessageList([]);
+                                setShowDeleteConfirm(false);
+                            }}>
+                                确认
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
 
         </div>
     );
