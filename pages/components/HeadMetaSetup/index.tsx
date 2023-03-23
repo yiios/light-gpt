@@ -3,6 +3,7 @@ import Head from 'next/head';
 const HeadMeatSetup = () => {
     return (
         <Head>
+            <title>ChatGPT 镜像站 - ai.yiios.com</title>
             <meta
                 name="viewport"
                 content="width=device-width, initial-scale=1.0"
