@@ -1,34 +1,48 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import { v4 as uuid } from 'uuid';
+import Image from 'next/image';
 
 import { toast } from 'react-toastify';
 
 import MarkdownIt from 'markdown-it';
 
-import Image from 'next/image';
+import MdHighlight from 'markdown-it-highlightjs';
 
 // @ts-ignore
 import MdKatex from 'markdown-it-katex';
 
-import MdHighlight from 'markdown-it-highlightjs';
-
 import Highlightjs from 'highlight.js';
+import regex from 'highlight.js/lib/languages/ini';
 
-import copy from 'react-copy-to-clipboard';
+// styles
+import 'highlight.js/styles/atom-one-dark.css';
+import 'katex/dist/katex.min.css';
 
 import { ERole } from '../../../interface';
 
 import styles from './index.module.scss';
 
-async function copyTextToClipboard(text: string) {
-    try {
-        await navigator.clipboard.writeText(text);
-        console.log('Text copied to clipboard');
-    } catch (err) {
-        console.error('Failed to copy text: ', err);
-    }
-}
+export const testMd = `
+# My Markdown Document
+
+Here is some code:
+
+\`\`\`js
+const greet = (name) => {
+  console.log(\`Hello, \${name}!\`);
+};
+
+greet('World');
+\`\`\`
+
+Here is a math formula:
+
+$$
+\\sum_{i=1}^n i^2 = \\frac{n(n+1)(2n+1)}{6}
+$$
+`;
+
+Highlightjs.registerLanguage('regex', regex);
 
 const MessageItem: React.FC<{
     id: string;
@@ -37,16 +51,18 @@ const MessageItem: React.FC<{
     avatar?: string;
     showRetry?: boolean;
     onRetry?: () => void;
-}> = ({ role, message, avatar, showRetry, onRetry }) => {
+    removeMessageById?: (id: string) => void;
+}> = ({ id, role, message, avatar, showRetry, onRetry, removeMessageById }) => {
     const currentMessageEle = useRef<HTMLDivElement | null>(null);
 
     const htmlString = () => {
-        const md = MarkdownIt().use(MdKatex).use(MdHighlight, {
-            hljs: Highlightjs,
-        });
+        const md = MarkdownIt()
+            .use(MdHighlight, {
+                hljs: Highlightjs,
+            })
+            .use(MdKatex);
         const fence = md.renderer.rules.fence;
         if (!fence) return '';
-        const id = uuid();
         md.renderer.rules.fence = (...args) => {
             const [tokens, idx] = args;
             const token = tokens[idx];
@@ -58,6 +74,7 @@ const MessageItem: React.FC<{
         ${rawCode}
         </div>`;
         };
+        // return md.render(testMd);
         return md.render(message || '');
     };
 
@@ -100,6 +117,12 @@ const MessageItem: React.FC<{
             className={styles.message}
             ref={(ele) => (currentMessageEle.current = ele)}
         >
+            <i
+                className={`fas fa-trash-alt ${styles.removeMessage}`}
+                onClick={() => {
+                    removeMessageById?.(id);
+                }}
+            ></i>
             {role === ERole.user ? (
                 <>
                     <div className={styles.placeholder}></div>

@@ -1,5 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import Link from 'next/link';
 
 import { throttle } from 'lodash';
 
@@ -12,16 +13,18 @@ import html2canvas from 'html2canvas';
 
 import html2pdf from 'html2pdf-jspdf2';
 
-import Link from 'next/link';
-
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import styles from '@/styles/Home.module.scss';
+
+import IndexHeader from './components/IndexHeader';
 
 import HeadMeatSetup from './components/HeadMetaSetup';
 
 import MessageItem from './components/MessageItem';
 import AvatarUploader from './components/AvatarUploader';
+
+import HistoryTopicList from './components/HistoryTopicList';
 
 import {
     chatWithGptTurbo,
@@ -90,12 +93,25 @@ export default function Home() {
     }, []);
 
     const [theme, setTheme] = useState<Theme>('light');
+    const updateTheme = useCallback((theme: Theme) => {
+        setTheme(theme);
+    }, []);
 
-    const [isGenerateFile, setIsGenerateFile] = useState(false);
+    const [maskVisible, setMaskVisible] = useState(false);
+    const showMask = useCallback(() => {
+        setMaskVisible(true);
+    }, []);
+    const hideMask = useCallback(() => {
+        setMaskVisible(false);
+    }, []);
 
     const [tempSystemRoleValue, setTempSystemRoleValue] = useState('');
 
     const [systemMenuVisible, setSystemMenuVisible] = useState(false);
+    const toggleSystemMenuVisible = useCallback(() => {
+        setSystemMenuVisible((visible) => !visible);
+    }, []);
+
     const [activeSystemMenu, setActiveSystemMenu] = useState<
         SystemSettingMenu | ''
     >('');
@@ -136,7 +152,7 @@ export default function Home() {
             });
             return;
         }
-        setIsGenerateFile(true);
+        setMaskVisible(true);
         const element = chatHistoryEle.current;
         if (!element) return;
 
@@ -159,7 +175,7 @@ export default function Home() {
             },
         };
         html2pdf().from(element).set(opt).save();
-        setIsGenerateFile(false);
+        setMaskVisible(false);
     };
 
     const convertToImage = () => {
@@ -169,7 +185,7 @@ export default function Home() {
             });
             return;
         }
-        setIsGenerateFile(true);
+        setMaskVisible(true);
         const messageEleList =
             document.querySelector('#chatHistory')?.childNodes;
 
@@ -215,7 +231,7 @@ export default function Home() {
                 .toFixed(10)}dialog_list.png`;
 
             downloadLink.click();
-            setIsGenerateFile(false);
+            setMaskVisible(false);
         });
     };
 
@@ -227,6 +243,15 @@ export default function Home() {
     });
 
     const [messageList, setMessageList] = useState<IMessage[]>([]);
+
+    const removeMessageById = useCallback((id: string) => {
+        setMessageList((list) => list.filter((item) => item.id !== id));
+    }, []);
+
+    const updateCurrentMessageList = useCallback((messages: IMessage[]) => {
+        setMessageList(messages);
+    }, []);
+
     const [currentUserMessage, setCurrentUserMessage] = useState('');
     const userPromptRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -252,6 +277,13 @@ export default function Home() {
     );
 
     const [serviceErrorMessage, setServiceErrorMessage] = useState('');
+
+    // api request rate limit
+    const apiRequestRateLimit = useRef({
+        maxRequestsPerMinute: 10,
+        requestsThisMinute: 0,
+        lastRequestTime: 0,
+    });
 
     const chatGPTTurboWithLatestUserPrompt = async (isRegenerate = false) => {
         if (!apiKey) {
@@ -313,6 +345,19 @@ export default function Home() {
         userPromptRef.current.style.height = 'auto';
         scrollSmoothThrottle();
 
+        const now = Date.now();
+        if (now - apiRequestRateLimit.current.lastRequestTime >= 60000) {
+            apiRequestRateLimit.current.requestsThisMinute = 0;
+            apiRequestRateLimit.current.lastRequestTime = 0;
+        }
+        if (
+            apiRequestRateLimit.current.requestsThisMinute >=
+            apiRequestRateLimit.current.maxRequestsPerMinute
+        ) {
+            toast.warn(`Api Requests are too frequent, try again later! `);
+            return;
+        }
+
         try {
             setServiceErrorMessage('');
             setLoading(true);
@@ -324,6 +369,7 @@ export default function Home() {
                 latestMessageLimit3,
                 controller.current
             );
+            apiRequestRateLimit.current.requestsThisMinute += 1;
 
             if (!response.ok) {
                 throw new Error(response.statusText);
@@ -442,50 +488,12 @@ export default function Home() {
     }, []);
 
     const [activeTopicId, setActiveTopicId] = useState('');
-
-    const [historyTopicList, setHistoryTopicList] = useState<
-        { id: string; name: string }[]
-    >([]);
-
-    useEffect(() => {
-        chatDB.getTopics().then((topics) => {
-            setHistoryTopicList(topics || []);
-        });
+    const changeActiveTopicId = useCallback((id: string) => {
+        setActiveTopicId(id);
     }, []);
 
-    const generateTopic = () => {
-        if (messageList.length === 0) return;
-        const topicName =
-            messageList
-                .find((item) => item.role === ERole.user)
-                ?.content?.slice(0, 10) ||
-            `主题${new Date().getTime().toFixed(10)}`;
-        const topicId = uuid();
-        const topic = {
-            id: topicId,
-            name: topicName,
-            createdAt: Date.now(),
-        };
-
-        chatDB.addTopic(topic);
-        let newHistoryTopicList = historyTopicList.concat([]);
-        newHistoryTopicList.unshift(topic);
-        setHistoryTopicList(newHistoryTopicList);
-        messageList.forEach((message) => {
-            chatDB.addConversation({
-                topicId: topicId,
-                id: message.id,
-                role: message.role,
-                content: message.content,
-                createdAt: message.createdAt,
-            });
-        });
-        setMessageList([]);
-    };
-
-    const [historyTopicListVisible, setHistoryTopicListVisible] =
+    const [historyTopicListVisible, setHistoryDialogueListVisible] =
         useState(true);
-
             
     const [showPopup, setShowPopup] = useState(false);
 
@@ -504,6 +512,10 @@ export default function Home() {
 
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+    const toggleHistoryTopicListVisible = useCallback(() => {
+        setHistoryDialogueListVisible((visible) => !visible);
+    }, []);
+
     return (
         <div id="app" className={styles.app} data-theme={theme}>
             <HeadMeatSetup></HeadMeatSetup>
@@ -516,91 +528,18 @@ export default function Home() {
                     !historyTopicListVisible && styles.hide
                 }`}
             >
-                <div
-                    className={styles.mobileHistoryTopicListToggle}
-                    onClick={() =>
-                        setHistoryTopicListVisible((visible) => !visible)
+                <HistoryTopicList
+                    historyTopicListVisible={historyTopicListVisible}
+                    toggleHistoryTopicListVisible={
+                        toggleHistoryTopicListVisible
                     }
-                >
-                    {historyTopicListVisible ? (
-                        <i className="fas fa-chevron-left"></i>
-                    ) : (
-                        <i className="fas fa-chevron-right"></i>
-                    )}
-                </div>
-                <div
-                    className={styles.newChatBtn}
-                    onClick={() => {
-                        if (activeTopicId) {
-                            setActiveTopicId('');
-                            setMessageList([]);
-                            return;
-                        }
-                        // 新建主题，将当前对话信息存储在新建的主题下，然后清空messageList
-                        generateTopic();
-                    }}
-                >
-                    <i className="fas fa-plus"></i>
-                    <span>开启新对话</span>
-                </div>
-                <div className={styles.historyTopicList}>
-                    <div className={styles.inner}>
-                        {historyTopicList.map((item) => {
-                            const isActive = item.id === activeTopicId;
-                            return (
-                                <div
-                                    key={item.id}
-                                    className={`${styles.historyTopic} ${
-                                        isActive && styles.active
-                                    } `}
-                                    onClick={async () => {
-                                        if (activeTopicId === '') {
-                                            generateTopic();
-                                        }
-                                        setActiveTopicId(item.id);
-                                        // 找出历史对话
-                                        setIsGenerateFile(true);
-                                        const messageList =
-                                            await chatDB.getConversationsByTopicId(
-                                                item.id
-                                            );
-                                        setMessageList(
-                                            messageList as IMessage[]
-                                        );
-
-                                        setIsGenerateFile(false);
-                                    }}
-                                >
-                                    <i className="fas fa-comment"></i>
-                                    <div className={styles.topicName}>
-                                        {item.name}
-                                    </div>
-                                    <i
-                                        className={`fas fa-times ${styles.remove}`}
-                                        onClick={async () => {
-                                            await chatDB.deleteTopicById(
-                                                item.id
-                                            );
-                                            setHistoryTopicList((list) =>
-                                                list.filter(
-                                                    (o) => o.id !== item.id
-                                                )
-                                            );
-                                            setMessageList([]);
-                                            setActiveTopicId('');
-                                            toast.success(
-                                                'Successful deleted topic',
-                                                {
-                                                    autoClose: 1000,
-                                                }
-                                            );
-                                        }}
-                                    ></i>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
+                    currentMessageList={messageList}
+                    updateCurrentMessageList={updateCurrentMessageList}
+                    activeTopicId={activeTopicId}
+                    changeActiveTopicId={changeActiveTopicId}
+                    showMask={showMask}
+                    hideMask={hideMask}
+                />
             </div>
 
             <div
@@ -621,58 +560,12 @@ export default function Home() {
                 ))}
             </div>
             <div className={styles.header}>
-
-                <div className={styles.title} onClick={async () => {}}>
-                    <span className={styles.item}>ai.yiios.com</span>
-                    <span className={styles.item}>GPT 镜像站)</span>
-                    {/* <span className={styles.item}>❌目前OpenAPI上游故障，请等待，会第一时间修复解决</span> */}
-                </div>
-                {apiKey ? (
-                    <div className={styles.description}>
-                        基于 OpenAI API(gpt-3.5-turbo)
-                    </div>
-                ) : (
-                    <div className={styles.description}>
-                        基于 OpenAI API(gpt-3.5-turbo)
-                        <Link href="https://shop.yiios.com" target="_blank">
-                            API Key 购买链接
-                        </Link>
-                    </div>
-                )}
-                <div className={styles.menus}>
-                    <div
-                        className="themeToggleBtn"
-                        onClick={() => {
-                            setTheme(theme === 'light' ? 'dark' : 'light');
-                            window.localStorage.setItem(
-                                ThemeLocalKey,
-                                theme === 'light' ? 'dark' : 'light'
-                            );
-                        }}
-                    >
-                        {theme === 'light' ? (
-                            <i className="fas fa-moon"></i>
-                        ) : (
-                            <i className="fas fa-sun"></i>
-                        )}
-                    </div>
-                    <i
-                        className="fas fa-cog"
-                        onClick={() => {
-                            setSystemMenuVisible((visible) => !visible);
-                        }}
-                    ></i>
-
-                    <i
-                        className="fas fa-comment-dots"
-                        onClick={() => {
-                            window.open(
-                                'https://yiios.com/post/about/',
-                                '_blank'
-                            );
-                        }}
-                    ></i>
-                </div>
+                <IndexHeader
+                    apiKey={apiKey}
+                    theme={theme}
+                    updateTheme={updateTheme}
+                    toggleSystemMenuVisible={toggleSystemMenuVisible}
+                />
             </div>
             <div className={styles.main}>
                 <div
@@ -693,6 +586,7 @@ export default function Home() {
                                         : robotAvatar
                                 }
                                 message={item.content}
+                                removeMessageById={removeMessageById}
                             />
                         ))}
                     {loading && currentAssistantMessage.length > 0 && (
@@ -886,7 +780,6 @@ export default function Home() {
                 )}
             </div>
 
-            {/** 模态框 */}
             <div
                 className={`${styles.modal} ${
                     !activeSystemMenu && styles.hide
@@ -1071,7 +964,7 @@ export default function Home() {
             </div>
 
             {/** 生成图片、pdf的简单loading */}
-            {isGenerateFile && (
+            {maskVisible && (
                 <div className={styles.loading}>
                     <div className={styles.loadingSpinner}></div>
                 </div>

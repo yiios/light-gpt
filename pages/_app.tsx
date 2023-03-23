@@ -2,9 +2,6 @@ import '@/styles/globals.scss';
 import 'normalize.css';
 import { Analytics } from '@vercel/analytics/react';
 
-// code hight
-import 'highlight.js/styles/atom-one-dark.css';
-
 import type { AppProps } from 'next/app';
 import { useEffect } from 'react';
 
