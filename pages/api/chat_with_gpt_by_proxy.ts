@@ -37,7 +37,7 @@ export default async function handler(
 
         try {
             const proxyRes = await fetch(
-                `https://chatgpt.yiios.com:8443/v1/chat/completions`,
+                `https://openai.yiios.com:8443/v1/chat/completions`,
                 options
             );
             if (!proxyRes.body) {
