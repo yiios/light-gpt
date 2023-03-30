@@ -14,7 +14,7 @@ const HeadMeatSetup = () => {
             />
             <meta
                 name="description"
-                content="Light-GPT is an interactive website project b"
+                content="一个体验超级好的ChatGPT镜像网站，免费使用"
             />
 
             <meta name="keywords" content="Next.js,ChatGPT,GPT,AI" />
