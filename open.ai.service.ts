@@ -29,7 +29,7 @@ export const chatWithGptTurbo = async (
 
     try {
         const res = await fetch(
-            `https://45.135.116.77/v1/chat/completions`,
+            `https://chatgpt.yiios.com:8443/v1/chat/completions`,
             requestInit
         ).then(async (response) => {
             if (!response.ok) {
@@ -75,7 +75,7 @@ export const chatWithGptTurboByProxy = async (
 
 export const getCurrentApiKeyBilling = async (apiKey: string) => {
     const res = await fetch(
-        `https://45.135.116.77/dashboard/billing/credit_grants`,
+        `https://chatgpt.yiios.com:8443/dashboard/billing/credit_grants`,
         {
             headers: {
                 'Content-Type': 'application/json',
