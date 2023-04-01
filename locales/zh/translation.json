@@ -2,7 +2,7 @@
     "changeLanguage": "切换语言",
     "changeDarkMode": "浅色模式",
     "changeLightMode": "深色模式",
-    "robotAvatarSetting": "机器人头像设置",
+    "robotAvatarSetting": "客服头像设置",
     "userAvatarSettings": "用户头像设置",
     "systemRoleSettings": "客服角色设置",
     "systemRoleDescription": "客服角色指客服的角色身份，可以是不同的人物、机器人或其他实体。通过设置不同的系统角色，您可以控制客服的情感和语气，以更好地适应特定场景的需求。",
