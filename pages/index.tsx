@@ -723,7 +723,7 @@ export default function Home() {
                                             )
                                         }
                                     >
-                                        让客服重新回答
+                                        客服重新回答
                                     </div>
                                 )}
                             </div>
