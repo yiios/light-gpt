@@ -331,7 +331,7 @@ export default function Home() {
                     : {
                           role: ERole.system,
                           content:
-                              'You are a versatile expert, please answer each of my questions in a simple and easy-to-understand way as much as possible, and it best to use Chinese.',
+                              'You are a versatile expert, please answer each of my questions in a simple and easy-to-understand way as much as possible.',
                           id: systemRole.id,
                           createdAt: systemRole.createdAt,
                       }
