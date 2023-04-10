@@ -44,10 +44,12 @@ import {
     ThemeLocalKey,
     UserAvatarLocalKey,
     RobotAvatarLocalKey,
-    SystemRoleLocalKey,
     APIKeyLocalKey,
     GenerateImagePromptPrefix,
-    formatTimestamp
+    formatTimestamp,
+    encryptApiKey,
+    decryptApiKey,
+    DefaultSystemRole,
 } from '../utils';
 
 const chatDB = new ChatService();
@@ -93,40 +95,12 @@ export default function Home() {
 
     const [tempSystemRoleValue, setTempSystemRoleValue] = useState('');
 
-    const [systemMenuVisible, setSystemMenuVisible] = useState(false);
-    const toggleSystemMenuVisible = useCallback(() => {
-        setSystemMenuVisible((visible) => !visible);
-    }, []);
-
     const [activeSystemMenu, setActiveSystemMenu] = useState<
         SystemSettingMenu | ''
     >('');
 
     const [tempApiKeyValue, setTempApiKeyValue] = useState('');
     const [apiKey, setApiKey] = useState('');
-
-    const [currentApiKeyBilling, setCurrentApiKeyBilling] = useState({
-        totalGranted: 0,
-        totalAvailable: 0,
-        totalUsed: 0,
-        expiresAt: ''
-    });
-
-    useEffect(() => {
-        if (!apiKey) return;
-        getCurrentApiKeyBilling(apiKey).then((res) => {
-            if (res.total_granted) {
-                setCurrentApiKeyBilling({
-                    totalGranted: res.total_granted,
-                    totalAvailable: res.total_available,
-                    totalUsed: res.total_used,
-                    expiresAt: formatTimestamp(
-                        res.grants?.data?.[0]?.expires_at
-                    ),
-                });
-            }
-        });
-    }, [apiKey]);
 
     const chatHistoryEle = useRef<HTMLDivElement | null>(null);
 
@@ -222,10 +196,18 @@ export default function Home() {
 
     const [systemRole, setSystemRole] = useState<IMessage>({
         role: ERole.system,
-        content: '',
+        content: DefaultSystemRole,
         id: uuid(),
         createdAt: Date.now(),
     });
+
+    const updateCurrentSystemRole = useCallback((newSystemRole: string) => {
+        setSystemRole((info) => ({
+            ...info,
+            content: newSystemRole,
+        }));
+        setTempSystemRoleValue(newSystemRole);
+    }, []);
 
     const [messageList, setMessageList] = useState<IMessage[]>([]);
 
@@ -239,9 +221,11 @@ export default function Home() {
     }, []);
 
     const [currentUserMessage, setCurrentUserMessage] = useState('');
+    const tempCurrentUserMessageId = useRef(uuid());
     const userPromptRef = useRef<HTMLTextAreaElement | null>(null);
 
     const [currentAssistantMessage, setCurrentAssistantMessage] = useState('');
+    const tempCurrentAssistantMessageId = useRef(uuid());
 
     const [loading, setLoading] = useState(false);
 
@@ -287,14 +271,14 @@ export default function Home() {
 
         if (!apiKey) {
             toast.error('请设置 API 密钥', {
-                autoClose: 3000,
+                autoClose: 1000,
             });
-            setSystemMenuVisible(true);
             setActiveSystemMenu(SystemSettingMenu.apiKeySettings);
             return;
         }
 
         // 先把用户输入信息展示到对话列表
+        const currentUserMessage = userPromptRef.current?.value || '';
         if (!isRegenerate && !currentUserMessage) {
             toast.warn('请输入你要咨询的问题', { autoClose: 1000 });
             return;
@@ -318,28 +302,24 @@ export default function Home() {
             }
         }
 
-        // 取出最近的3条messages，作为上下文
+        // 当前问答的对话上下文
         const len = newMessageList.length;
         const latestMessageLimit3 = newMessageList.filter(
-            (_, idx) => idx >= len - 4
+            (_, idx) => idx >= len - (contextMessageCount + 1)
         );
         if (!latestMessageLimit3.some((item) => item.role === ERole.system)) {
             // system role setting
-            latestMessageLimit3.unshift(
-                systemRole.content
-                    ? systemRole
-                    : {
-                          role: ERole.system,
-                          content:
-                              'You are a versatile expert, please answer each of my questions in a simple and easy-to-understand way as much as possible.',
-                          id: systemRole.id,
-                          createdAt: systemRole.createdAt,
-                      }
-            );
+            latestMessageLimit3.unshift({
+                role: ERole.system,
+                content: systemRole.content,
+                id: systemRole.id,
+                createdAt: systemRole.createdAt,
+            });
         }
 
         setMessageList(newMessageList);
         setCurrentUserMessage('');
+        userPromptRef.current!.value = '';
         if (!userPromptRef.current) return;
         userPromptRef.current.style.height = 'auto';
         scrollSmoothThrottle();
@@ -443,7 +423,6 @@ export default function Home() {
             }
             setLoading(false);
             controller.current = null;
-            setCurrentUserMessage('');
             setCurrentAssistantMessage('');
             scrollSmoothThrottle();
         }
@@ -455,7 +434,7 @@ export default function Home() {
     const updateRobotAvatar = (img: string) => {
         setRobotAvatar(img);
         setActiveSystemMenu('');
-        setSystemMenuVisible(false);
+
         window.localStorage.setItem(RobotAvatarLocalKey, img);
     };
 
@@ -464,9 +443,14 @@ export default function Home() {
     const updateUserAvatar = (img: string) => {
         setUserAvatar(img);
         setActiveSystemMenu('');
-        setSystemMenuVisible(false);
+
         window.localStorage.setItem(UserAvatarLocalKey, img);
     };
+
+    const [activeTopicId, setActiveTopicId] = useState('');
+    const changeActiveTopicId = useCallback((id: string) => {
+        setActiveTopicId(id);
+    }, []);
 
     useEffect(() => {
         const light_gpt_theme =
@@ -478,27 +462,15 @@ export default function Home() {
         const light_gpt_robot_avatar =
             window.localStorage.getItem(RobotAvatarLocalKey) || '/robot.png';
         setRobotAvatar(light_gpt_robot_avatar);
-        const light_gpt_system_role =
-            window.localStorage.getItem(SystemRoleLocalKey) || '';
-        if (light_gpt_system_role !== '') {
-            setSystemRole({
-                role: ERole.system,
-                content: light_gpt_system_role,
-                id: uuid(),
-                createdAt: Date.now(),
-            });
-        }
+
         const light_gpt_api_key =
             window.localStorage.getItem(APIKeyLocalKey) || '';
-        if (light_gpt_api_key !== '') {
+        const decryptedApiKey = decryptApiKey(light_gpt_api_key);
+        if (decryptedApiKey !== '') {
             // 不显示设置过的api_key
-            setApiKey(light_gpt_api_key);
+            setApiKey(decryptedApiKey);
+            setTempApiKeyValue(decryptedApiKey);
         }
-    }, []);
-
-    const [activeTopicId, setActiveTopicId] = useState('');
-    const changeActiveTopicId = useCallback((id: string) => {
-        setActiveTopicId(id);
     }, []);
 
     const [asideVisible, setAsideVisible] = useState(true);
@@ -540,6 +512,8 @@ export default function Home() {
         setIsZh(newIsZh);
     };
 
+    const [contextMessageCount, setContextMessageCount] = useState(5);
+
     return (
         <div id="app" className={styles.app} data-theme={theme}>
             <aside
@@ -568,6 +542,8 @@ export default function Home() {
                         changeActiveTopicId={changeActiveTopicId}
                         showMask={showMask}
                         hideMask={hideMask}
+                        currentSystemRole={systemRole.content}
+                        updateCurrentSystemRole={updateCurrentSystemRole}
                     />
                 </div>
 
@@ -578,7 +554,10 @@ export default function Home() {
                     <div
                         className={styles.menu}
                         onClick={() => {
+                            console.log('主题切换---');
                             setTheme(theme === 'light' ? 'dark' : 'light');
+                            const secretKey = process.env.SECRET_KEY;
+                            console.log('secret-key--', secretKey);
                             window.localStorage.setItem(
                                 ThemeLocalKey,
                                 theme === 'light' ? 'dark' : 'light'
@@ -612,6 +591,20 @@ export default function Home() {
                             <div>{menu.label}</div>
                         </div>
                     ))}
+                    <div className={styles.menu}>
+                        <span>{t('chatBackgroundContext')}</span>
+                        <input
+                            value={contextMessageCount}
+                            onChange={(e) => {
+                                const text = e.target.value;
+                                const count = Number.isNaN(Number(text))
+                                    ? 3
+                                    : Number(text);
+                                setContextMessageCount(count);
+                            }}
+                            type="text"
+                        />
+                    </div>
                 </div>
             </aside>
 
@@ -625,7 +618,6 @@ export default function Home() {
                         apiKey={apiKey}
                         theme={theme}
                         updateTheme={updateTheme}
-                        toggleSystemMenuVisible={toggleSystemMenuVisible}
                     />
                 </div>
                 <div className={styles.main}>
@@ -651,12 +643,22 @@ export default function Home() {
                                         removeMessageById={removeMessageById}
                                     />
                                 ))}
+                            {!loading && currentUserMessage.length > 0 && (
+                                <MessageItem
+                                    id={tempCurrentUserMessageId.current}
+                                    role={ERole.user}
+                                    avatar={userAvatar}
+                                    message={currentUserMessage}
+                                    isTemp
+                                />
+                            )}
                             {loading && currentAssistantMessage.length > 0 && (
                                 <MessageItem
-                                    id={uuid()}
+                                    id={tempCurrentAssistantMessageId.current}
                                     role={ERole.assistant}
                                     avatar={robotAvatar}
                                     message={currentAssistantMessage}
+                                    isTemp
                                 />
                             )}
                             <div className={styles.placeholder}>
@@ -729,9 +731,7 @@ export default function Home() {
                             </div>
                             <textarea
                                 className={styles.userPrompt}
-                                onChange={(e) => {
-                                    setCurrentUserMessage(e.target.value);
-                                }}
+                                disabled={loading}
                                 onInput={() => {
                                     if (
                                         userPromptRef.current &&
@@ -742,37 +742,28 @@ export default function Home() {
                                             2 +
                                             'px';
                                     }
+                                    setCurrentUserMessage(
+                                        userPromptRef.current!.value
+                                    );
+                                    scrollSmoothThrottle();
                                 }}
-                                value={currentUserMessage}
                                 ref={(e) => {
                                     userPromptRef.current = e;
                                 }}
                                 placeholder={
                                     loading
                                         ? '客服正在输入...'
-                                        : '向客服咨询问题...'
+                                        : '向客服咨询问题。 "Ctrl+Enter"发送'
                                 }
                                 rows={1}
                                 onKeyDown={(event) => {
-                                    // event.key 的值不受操作系统和键盘布局的影响，它始终表示按下的是哪个字符键。
                                     // pc desktop
-
                                     if (!windowState.current.isMobile) {
                                         if (
                                             event.code === 'Enter' &&
                                             !event.shiftKey &&
                                             (event.metaKey || event.ctrlKey)
                                         ) {
-                                            // 按下 "Command/Ctrl" + "Enter"，输入换行符
-                                            const newValue =
-                                                currentUserMessage + '\n';
-                                            setCurrentUserMessage(newValue);
-                                            event.preventDefault();
-                                        } else if (
-                                            event.code === 'Enter' &&
-                                            !event.shiftKey
-                                        ) {
-                                            // 按下 "Enter"，发送请求
                                             if (
                                                 windowState.current
                                                     .isUsingComposition
@@ -784,7 +775,6 @@ export default function Home() {
                                             event.preventDefault();
                                         }
                                     }
-
                                     // mobile desktop
                                     if (
                                         windowState.current.isMobile &&
@@ -801,11 +791,11 @@ export default function Home() {
                                         chatGPTTurboWithLatestUserPrompt(false);
                                     }
                                 }}
-                                onCompositionStart={(e) => {
+                                onCompositionStart={() => {
                                     windowState.current.isUsingComposition =
                                         true;
                                 }}
-                                onCompositionEnd={(e) => {
+                                onCompositionEnd={() => {
                                     windowState.current.isUsingComposition =
                                         false;
                                 }}
@@ -867,7 +857,11 @@ export default function Home() {
                     }`}
                 >
                     <i
-                        className="fas fa-trash-alt"
+                        className="fas fa-file-download"
+                        onClick={convertToPDF}
+                    ></i>
+                    <i
+                        className="fas fa-redo-alt"
                         onClick={() => {
                             if (messageList.length === 0) {
                                 toast.warn(
@@ -950,19 +944,22 @@ export default function Home() {
                             <div className={styles.btnContainer}>
                                 <button
                                     className={styles.saveButton}
-                                    onClick={() => {
+                                    onClick={async () => {
                                         setActiveSystemMenu('');
-                                        setSystemMenuVisible(false);
+
                                         setSystemRole({
                                             role: ERole.system,
                                             content: tempSystemRoleValue,
                                             id: uuid(),
                                             createdAt: systemRole.createdAt,
                                         });
-                                        window.localStorage.setItem(
-                                            ThemeLocalKey,
-                                            tempSystemRoleValue
-                                        );
+                                        if (activeTopicId) {
+                                            // 更新当前主题的系统设置
+                                            await chatDB.updateTopicSystemRoleById(
+                                                activeTopicId,
+                                                tempSystemRoleValue
+                                            );
+                                        }
                                         toast.success('Successful update', {
                                             autoClose: 1000,
                                         });
@@ -976,12 +973,12 @@ export default function Home() {
                     {activeSystemMenu === SystemSettingMenu.apiKeySettings && (
                         <div className={styles.systemRoleSettings}>
                             <label htmlFor="apiKey">API 密钥设置</label>
-                            <div className={styles.description}>
+                            {/* <div className={styles.description}>
                                 <div className={styles.label}>{t('totalGranted')}: {apiKey ? currentApiKeyBilling.totalGranted.toFixed(3) : 0}</div>
                                 <div className={styles.label}>{t('totalAvailable')}: {apiKey ? currentApiKeyBilling.totalAvailable.toFixed(3) : 0}</div>
                                 <div className={styles.label}>{t('totalUsed')}: {apiKey ? currentApiKeyBilling.totalUsed.toFixed(3) : 0}</div>
                                 <div className={styles.label}>{t('expiresAt')}: {apiKey ? currentApiKeyBilling.expiresAt : '未知'}</div>
-                            </div>
+                            </div> */}
                             <input
                                 placeholder="输入你的 API 密钥"
                                 id="apiKey"
@@ -1016,11 +1013,13 @@ export default function Home() {
                                     className={styles.saveButton}
                                     onClick={() => {
                                         setActiveSystemMenu('');
-                                        setSystemMenuVisible(false);
                                         setApiKey(tempApiKeyValue);
+
+                                        const encryptedApiKey =
+                                            encryptApiKey(tempApiKeyValue);
                                         window.localStorage.setItem(
                                             APIKeyLocalKey,
-                                            tempApiKeyValue
+                                            encryptedApiKey
                                         );
                                         toast.success('Successful update', {
                                             autoClose: 1000,

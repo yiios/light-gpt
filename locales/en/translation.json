@@ -18,5 +18,6 @@
     "save": "save",
     "apiKeyRequiredTip1": "Please set your API key in the bottom left of the sidebar",
     "apiKeyRequiredTip2": "1. If you have a platform account, you can get it here:",
-    "apiKeyRequiredTip3": "2. If you do not have a platform account, you can purchase it here:"
+    "apiKeyRequiredTip3": "2. If you do not have a platform account, you can purchase it here:",
+    "chatBackgroundContext": "Count of context msg logs:"
 }

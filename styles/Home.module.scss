@@ -5,6 +5,7 @@
     overflow: hidden;
     .aside {
         width: 0;
+        min-width: 0;
         height: 100%;
         overflow: hidden;
         background-color: var(--aside-bg);
@@ -16,6 +17,7 @@
         transition: all 0.2s ease;
         &.show {
             width: 14vw;
+            min-width: 206px;
         }
         .historyTopicListContainer {
             flex: 1;
@@ -38,23 +40,29 @@
             flex-direction: column;
             justify-content: center;
             align-items: flex-start;
-            padding-left: 2vw;
+            padding-left: 1vw;
             flex-shrink: 0;
             height: 180px;
             .menu {
                 height: 30px;
                 display: flex;
                 align-items: center;
-                font-size: 14px;
+                font-size: 12px;
                 cursor: pointer;
-                i {
+                input {
                     width: 20px;
+                }
+                i {
+                    width: 10px;
                     text-align: right;
                 }
                 div {
                     width: 120px;
                     margin-left: 10px;
                     color: var(--aside-text-color);
+                }
+                span {
+                    white-space: nowrap;
                 }
             }
         }
@@ -219,6 +227,7 @@
                         box-sizing: border-box;
                         background-color: var(--bg-color);
                         color: var(--text-color-normal);
+                        resize: vertical;
                     }
 
                     .submit {
@@ -267,7 +276,7 @@
         }
 
         i {
-            margin-bottom: 40px;
+            margin-bottom: 60px;
             transform: scale(2);
             &:last-child {
                 margin-bottom: 0;
@@ -530,6 +539,7 @@
                             margin: 0;
                             font-size: 12px;
                             min-height: 30px;
+                            resize: vertical;
                         }
                         .submit {
                             right: 4px;
@@ -555,7 +565,7 @@
             margin: 0;
             i {
                 transform: scale(1.4);
-                margin-bottom: 30px;
+                margin-bottom: 50px;
             }
         }
 

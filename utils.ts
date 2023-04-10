@@ -4,6 +4,23 @@ import {
     ReconnectInterval,
 } from 'eventsource-parser';
 
+import CryptoJS from 'crypto-js';
+
+export const SECRET_KEY =
+    '64787423c7ea99e608bab61303b309a996a1e000db87bd73533bd979892b1644';
+
+export const encryptApiKey = (apiKey: string) => {
+    const encryptedApiKey = CryptoJS.AES.encrypt(apiKey, SECRET_KEY).toString();
+    return encryptedApiKey;
+};
+
+export const decryptApiKey = (encryptedApiKey: string) => {
+    // 使用AES加密算法进行解密
+    const bytes = CryptoJS.AES.decrypt(encryptedApiKey, SECRET_KEY);
+    const decryptedApiKey = bytes.toString(CryptoJS.enc.Utf8);
+    return decryptedApiKey;
+};
+
 export const parseOpenAIStream = (rawResponse: Response) => {
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
@@ -89,3 +106,5 @@ export const SystemRoleLocalKey = 'light_gpt_system_role';
 export const APIKeyLocalKey = 'light_gpt_api_key';
 
 export const GenerateImagePromptPrefix = 'img-';
+
+export const DefaultSystemRole = `You are a versatile expert, please answer each of my questions in a simple and easy-to-understand way as much as possible`;

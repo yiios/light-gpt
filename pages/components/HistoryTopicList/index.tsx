@@ -9,6 +9,7 @@ import { ChatService } from '../../../db';
 import { ERole, IMessage } from '../../../interface';
 
 import styles from './index.module.scss';
+import { DefaultSystemRole } from '@/utils';
 
 const chatDB = new ChatService();
 
@@ -20,6 +21,8 @@ const HistoryTopicList: React.FC<{
     changeActiveTopicId: (id: string) => void;
     showMask: () => void;
     hideMask: () => void;
+    currentSystemRole: string;
+    updateCurrentSystemRole: (content: string) => void;
 }> = ({
     historyTopicListVisible,
     currentMessageList,
@@ -28,9 +31,11 @@ const HistoryTopicList: React.FC<{
     changeActiveTopicId,
     showMask,
     hideMask,
+    currentSystemRole,
+    updateCurrentSystemRole,
 }) => {
     const [historyTopicList, setHistoryTopicList] = useState<
-        { id: string; name: string }[]
+        { id: string; name: string; systemRole: string }[]
     >([]);
 
     const generateTopic = () => {
@@ -42,9 +47,11 @@ const HistoryTopicList: React.FC<{
             id: topicId,
             name: topicName,
             createdAt: Date.now(),
+            systemRole: DefaultSystemRole,
         };
 
         chatDB.addTopic(topic);
+        updateCurrentSystemRole(DefaultSystemRole);
         let newHistoryTopicList = historyTopicList.concat([]);
         newHistoryTopicList.unshift(topic);
         setHistoryTopicList(newHistoryTopicList);
@@ -96,6 +103,7 @@ const HistoryTopicList: React.FC<{
                     id: topicId,
                     name: topicName,
                     createdAt: Date.now(),
+                    systemRole: DefaultSystemRole,
                 };
 
                 chatDB.addTopic(topic);
@@ -109,6 +117,7 @@ const HistoryTopicList: React.FC<{
 
             setHistoryTopicList(topics);
             changeActiveTopicId(topics[0].id);
+            updateCurrentSystemRole(topics[0].systemRole);
 
             showMask();
             // 找出点击的主题的历史对话
@@ -120,7 +129,13 @@ const HistoryTopicList: React.FC<{
             hideMask();
         };
         init();
-    }, [changeActiveTopicId, updateCurrentMessageList, hideMask, showMask]);
+    }, [
+        changeActiveTopicId,
+        updateCurrentMessageList,
+        hideMask,
+        showMask,
+        updateCurrentSystemRole,
+    ]);
 
     const [editingTopicName, setEditingTopicName] = useState(false);
     const [tempTopicName, setTempTopicName] = useState('');
@@ -162,6 +177,8 @@ const HistoryTopicList: React.FC<{
                                 } `}
                                 onClick={async () => {
                                     changeActiveTopicId(item.id);
+
+                                    updateCurrentSystemRole(item.systemRole);
 
                                     showMask();
                                     // 找出点击的主题的历史对话
@@ -230,7 +247,7 @@ const HistoryTopicList: React.FC<{
                                                         toast.success(
                                                             'Update Topic Name Successful',
                                                             {
-                                                                autoClose: 500,
+                                                                autoClose: 1000,
                                                             }
                                                         );
                                                     }
@@ -253,7 +270,7 @@ const HistoryTopicList: React.FC<{
                                                         toast.success(
                                                             'Successful deleted topic',
                                                             {
-                                                                autoClose: 500,
+                                                                autoClose: 1000,
                                                             }
                                                         );
                                                     }
