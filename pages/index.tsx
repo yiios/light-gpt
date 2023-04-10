@@ -315,7 +315,7 @@ export default function Home() {
             // default system role setting
             latestMessageLimit3.unshift({
                 role: ERole.system,
-                content: systemRole.content,
+                content: systemRole.content??DefaultSystemRole,
                 id: systemRole.id,
                 createdAt: systemRole.createdAt,
             });
