@@ -758,7 +758,7 @@ export default function Home() {
                                         ? '客服正在输入...'
                                         : `向客服咨询问题 ${
                                               !isMobile
-                                                  ? ', "Ctrl+Enter" 发送'
+                                                  ? ', "Ctrl+Enter" 换行'
                                                   : ''
                                           }`
                                 }
@@ -768,18 +768,23 @@ export default function Home() {
                                     if (!windowState.current.isMobile) {
                                         if (
                                             event.code === 'Enter' &&
-                                            !event.shiftKey &&
-                                            (event.metaKey || event.ctrlKey)
+                                            !event.shiftKey 
                                         ) {
                                             if (
                                                 windowState.current
                                                     .isUsingComposition
                                             )
                                                 return;
-                                            chatGPTTurboWithLatestUserPrompt(
-                                                false
-                                            );
-                                            event.preventDefault();
+
+                                            if (event.metaKey || event.ctrlKey) {
+                                                // ctrl/cmd + enter
+                                                document.execCommand('insertLineBreak');
+                                                event.preventDefault();
+                                            } else {
+                                                // enter
+                                                chatGPTTurboWithLatestUserPrompt(false);
+                                                event.preventDefault();
+                                            }
                                         }
                                     }
                                     // mobile desktop
