@@ -3,7 +3,6 @@ import type { AppProps } from 'next/app';
 import { appWithTranslation } from 'next-i18next';
 import '@/styles/globals.scss';
 import 'normalize.css';
-import { Analytics } from '@vercel/analytics/react';
 
 import i18n from '../i18n';
 
@@ -27,7 +26,6 @@ function App({ Component, pageProps }: AppProps) {
     return (
         <>
           <Component {...pageProps} />
-          <Analytics />
         </>
       );
 }
