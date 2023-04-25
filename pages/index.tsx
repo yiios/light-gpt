@@ -863,11 +863,12 @@ export default function Home() {
                     </div>
                 </div>
                 {/** extra function menus */}
-                <div
-                    className={`${styles.extraFunction} ${
-                        !messageList.length && styles.noMessage
-                    }`}
-                >
+                {isMobile ? (<i></i>) :
+                    <div
+                        className={`${styles.extraFunction} ${
+                            !messageList.length && styles.noMessage
+                        }`}
+                    >
                     <i
                         className="fas fa-file-download"
                         onClick={convertToPDF}
@@ -895,7 +896,8 @@ export default function Home() {
                         }
                     ></i>
                     )}
-                </div>
+                    </div>
+                }
             </main>
 
             <div
