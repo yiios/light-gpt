@@ -477,7 +477,7 @@ export default function Home() {
         }
     }, []);
 
-    const [asideVisible, setAsideVisible] = useState(true);
+    const [asideVisible, setAsideVisible] = useState(false);
 
     const toggleAsideVisible = useCallback(() => {
         setAsideVisible((visible) => !visible);
@@ -829,9 +829,9 @@ export default function Home() {
                             </div>
                         </div>
                         <div className={styles.siteDescription}>
-                            <span>yiios</span>
+                            {/* <span>yiios</span>
                             <span>｜</span>
-                            <span>Just have fun</span>
+                            <span>Just have fun</span> */}
                         </div>
                     </div>
                     <div className={styles.action}>
