@@ -673,7 +673,7 @@ export default function Home() {
                             <div className={styles.title}>
                                 需要 API 密钥
                             </div>
-                            <div className={styles.desc}>
+                            {/* <div className={styles.desc}>
                                 {t('apiKeyRequiredTip1')}
                             </div>
                             <div className={styles.desc}>
@@ -688,7 +688,7 @@ export default function Home() {
                                     购买链接
                                 </Link>
                             </div>
-                            <img src="https://cardocr-1251789346.cos.ap-guangzhou.myqcloud.com/wx_qr.png" alt="popup" />
+                            <img src="https://cardocr-1251789346.cos.ap-guangzhou.myqcloud.com/wx_qr.png" alt="popup" /> */}
                         </div>
                     )}
                 </div>
@@ -1004,7 +1004,7 @@ export default function Home() {
                                 {t('apiKeyDescription')}
                             </div>
 
-                            <div className={styles.benefits}>
+                            {/* <div className={styles.benefits}>
                                 {t('apiKeyHelp')}
                                 <div className={styles.desc}>
                                 {t('apiKeyRequiredTip2')}
@@ -1019,7 +1019,7 @@ export default function Home() {
                                 </Link>
                             </div>
 
-                            </div>
+                            </div> */}
                             <div className={styles.btnContainer}>
                                 <button
                                     className={styles.saveButton}

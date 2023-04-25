@@ -77,13 +77,13 @@ const IndexHeader: React.FC<{
 
             <div className={styles.siteIntroduction}>
                 <div className={styles.title}>
-                    <span className={styles.item}>ai.yiios.com</span>
+                    {/* <span className={styles.item}>ai.yiios.com</span> */}
                     <span className={styles.item}>小鱼智能客服</span>
                 </div>
                 <div className={styles.description}>智能连接用户，全场景赋能客服</div>
             </div>
             <div className={styles.sideMenus}>
-                <i
+                {/* <i
                     className="fas fa-comment-dots"
                     onClick={() => {
                         window.open(
@@ -91,7 +91,7 @@ const IndexHeader: React.FC<{
                             '_blank'
                         );
                     }}
-                ></i>
+                ></i> */}
             </div>
         </div>
     );
