@@ -3,7 +3,7 @@ import Head from 'next/head';
 const HeadMeatSetup = () => {
     return (
         <Head>
-            {/* <title>小鱼智能客服 - ai.yiios.com</title> */} 
+            {/* <title>小鱼智能客服 - ai.yiios.com</title> */}
             <title>小鱼智能客服</title>
             <meta
                 name="viewport"
