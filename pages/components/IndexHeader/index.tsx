@@ -78,9 +78,9 @@ const IndexHeader: React.FC<{
             <div className={styles.siteIntroduction}>
                 <div className={styles.title}>
                     {/* <span className={styles.item}>ai.yiios.com</span> */}
-                    <span className={styles.item}>云助科技客服</span>
+                    <span className={styles.item}></span>
                 </div>
-                <div className={styles.description}>智能连接用户，全场景赋能客服</div>
+                <div className={styles.description}></div>
             </div>
             <div className={styles.sideMenus}>
                 {/* <i
