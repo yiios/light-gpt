@@ -684,7 +684,7 @@ export default function Home() {
                             </div>
                             <div className={styles.desc}>
                                 {t('apiKeyRequiredTip3')}
-                                <Link href="https://shop.yiios.com" target="_blank">
+                                <Link href="https://s.yiios.com" target="_blank">
                                     购买链接
                                 </Link>
                             </div>
@@ -1014,7 +1014,7 @@ export default function Home() {
                             </div>
                             <div className={styles.desc}>
                                 {t('apiKeyRequiredTip3')}
-                                <Link href="https://shop.yiios.com" target="_blank">
+                                <Link href="https://s.yiios.com" target="_blank">
                                     购买链接
                                 </Link>
                             </div>
