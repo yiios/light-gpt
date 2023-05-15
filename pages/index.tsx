@@ -681,7 +681,7 @@ export default function Home() {
                                 使用完后，您可重新购买账号API。
                             </div>
                             <div className={styles.desc}>
-                                如有问题，请联系微信：hello_myfirends
+                                如有问题，请联系微信：OpenAicome
                             </div>
 
                             
