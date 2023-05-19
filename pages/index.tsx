@@ -728,7 +728,7 @@ export default function Home() {
                                             )
                                         }
                                     >
-                                        客服重新回答
+                                        重新回答
                                     </div>
                                 )}
                             </div>
