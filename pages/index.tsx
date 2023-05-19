@@ -76,15 +76,6 @@ export default function Home() {
         handleWindowResize();
         window.addEventListener('resize', handleWindowResize);
 
-        if (!apiKey) {
-            toast.error('请设置 API 密钥', {
-                autoClose: 1000,
-            });
-            setActiveSystemMenu(SystemSettingMenu.apiKeySettings);
-            return;
-        }
-
-
         return () => {
             window.removeEventListener('resize', handleWindowResize);
         };
@@ -112,6 +103,23 @@ export default function Home() {
     const [tempApiKeyValue, setTempApiKeyValue] = useState('');
     const [apiKey, setApiKey] = useState('');
 
+    const [isMounted, setIsMounted] = useState(false);
+    useEffect(() => {
+        console.log("页面已经进入" + apiKey);
+
+        if (isMounted) {
+            if (!apiKey || apiKey === '') {
+                toast.error('请设置 API 密钥', {
+                    autoClose: 1000,
+                });
+                setActiveSystemMenu(SystemSettingMenu.apiKeySettings);
+            }
+        } else {
+            setIsMounted(true);
+          }
+      
+      }, [apiKey, isMounted]);
+    
     const chatHistoryEle = useRef<HTMLDivElement | null>(null);
 
     const convertToPDF = () => {
