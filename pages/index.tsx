@@ -75,6 +75,16 @@ export default function Home() {
 
         handleWindowResize();
         window.addEventListener('resize', handleWindowResize);
+
+        if (!apiKey) {
+            toast.error('请设置 API 密钥', {
+                autoClose: 1000,
+            });
+            setActiveSystemMenu(SystemSettingMenu.apiKeySettings);
+            return;
+        }
+
+
         return () => {
             window.removeEventListener('resize', handleWindowResize);
         };
@@ -654,37 +664,7 @@ export default function Home() {
                             </div>
                         </div>
                     ) : (
-                        <div className={styles.apiKeyRequiredTip}>
-                            <div className={styles.title}>
-                                OpenAI镜像站使用声明
-                            </div>
-
-                            <div className={styles.desc}>
-                                服务于不会科学上网的用户，方便使用
-                            </div>
-                            <div className={styles.desc}>
-                                您只需在 左下角 设置您的API 秘钥
-                            </div>
-                            <div className={styles.desc}>
-                                即可使用OpenAI chatGpt进行对话。
-                            </div>
-                            <div className={styles.desc}>
-                                API不会过期，是与您账号进行绑定的。
-                            </div>
-                            <div className={styles.desc}>
-                                只是无需您无需科学上网，就可以使用。
-                            </div>
-                            <div className={styles.desc}>
-                                ChatGpt可回答120W字的问题。
-                            </div>
-                            <div className={styles.desc}>
-                                使用完后，您可重新购买账号API。
-                            </div>
-                            <div className={styles.desc}>
-                                如有问题，请联系微信：OpenAicome
-                            </div>
-
-                            
+                        <div className={styles.apiKeyRequiredTip}>                            
                             {/* <div className={styles.desc}>
                                 {t('apiKeyRequiredTip1')}
                             </div>
@@ -767,8 +747,8 @@ export default function Home() {
                                 }}
                                 placeholder={
                                     loading
-                                        ? '客服正在输入...'
-                                        : `向客服咨询问题 ${
+                                        ? 'GPT正在输入...'
+                                        : `向GPT提问 ${
                                               !isMobile
                                                   ? ', "Ctrl+Enter" 换行'
                                                   : ''

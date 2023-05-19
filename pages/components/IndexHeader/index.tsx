@@ -12,6 +12,8 @@ import styles from './index.module.scss';
 
 import Link from 'next/link';
 
+import Image from 'next/image';
+
 const IndexHeader: React.FC<{
     apiKey: string;
     theme: Theme;
@@ -77,6 +79,14 @@ const IndexHeader: React.FC<{
 
             <div className={styles.siteIntroduction}>
                 <div className={styles.title}>
+                <Image
+                            className={styles.image}
+                            width={80}
+                            height={80}
+                            src="/logo.png"
+                            alt="user"
+                        />
+
                     {/* <span className={styles.item}>ai.yiios.com</span> */}
                     <span className={styles.item}></span>
                 </div>

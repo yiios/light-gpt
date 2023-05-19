@@ -3,7 +3,7 @@ import Head from 'next/head';
 const HeadMeatSetup = () => {
     return (
         <Head>
-            {/* <title>小鱼智能客服 - ai.yiios.com</title> */}
+            <title>润德专线-chatgpt</title>
             <title></title>
             <meta
                 name="viewport"
@@ -15,7 +15,7 @@ const HeadMeatSetup = () => {
             />
             <meta
                 name="description"
-                content="一个体验超级好的客服对话网站，免费使用"
+                content="一个体验超级好的对话网站，免费使用"
             />
 
             <meta name="keywords" content="Next.js,客服,智能,AI" />
