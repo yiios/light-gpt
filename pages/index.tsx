@@ -405,7 +405,7 @@ export default function Home() {
         } catch (error: any) {
             setLoading(false);
             controller.current = null;
-            setServiceErrorMessage(error?.error?.message || '服务器错误');
+            setServiceErrorMessage(error?.error?.message || '调用错误，请检查API密钥(API-Key)。仍有问题请微信联系：limo-on');
         }
     };
 
