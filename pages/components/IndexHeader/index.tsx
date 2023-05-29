@@ -82,6 +82,18 @@ const IndexHeader: React.FC<{
                 </div>
                 <div className={styles.description}>智能连接用户，全场景赋能客服</div>
             </div>
+
+            <div className={styles.sideMenus}>
+                <i
+                    className="fas far fa-book-spells"
+                    onClick={() => {
+                        window.open(
+                            'https://www.yuque.com/yiliqi-t2n6d/newguy/vn4nadfs2zl8gb9u?singleDoc#',
+                            '_blank'
+                        );
+                    }}
+                ></i>
+            </div>
             <div className={styles.sideMenus}>
                 <i
                     className="fas fa-comment-dots"
