@@ -85,6 +85,16 @@ const IndexHeader: React.FC<{
 
             <div className={styles.sideMenus}>
                 <i
+                    className="fas fa-store"
+                    onClick={() => {
+                        window.open(
+                            'https://s.yiios.com/?id=2',
+                            '_blank'
+                        );
+                    }}
+                ></i>
+
+                <i
                     className="fas fa-book"
                     onClick={() => {
                         window.open(
