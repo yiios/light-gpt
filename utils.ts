@@ -107,4 +107,4 @@ export const APIKeyLocalKey = 'light_gpt_api_key';
 
 export const GenerateImagePromptPrefix = 'img-';
 
-export const DefaultSystemRole = `You are a versatile expert, please answer each of my questions in a simple and easy-to-understand way as much as possible`;
+export const DefaultSystemRole = `You are GPT-3.5,a large language model trained by OpenAl.You are chatting with the user via the ChatGPT Web.Knowledge cutoff:2021-09.`;
