@@ -405,7 +405,13 @@ export default function Home() {
         } catch (error: any) {
             setLoading(false);
             controller.current = null;
-            setServiceErrorMessage(error?.error?.message || '调用错误，请检查API密钥(API-Key)。仍有问题请微信联系：limo-on');
+            let errorStr = error?.error?.message || '调用错误，请检查API密钥(API-Key)。仍有问题请微信联系：limo-on'
+
+            if (error?.error?.type == 'insufficient_quota') {
+                errorStr = '账号额度用尽，请访问：https://s.yiios.com 重新购买'
+            }
+
+            setServiceErrorMessage(errorStr);
         }
     };
 
