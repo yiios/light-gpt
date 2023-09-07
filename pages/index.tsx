@@ -658,27 +658,29 @@ export default function Home() {
                             <div className={styles.title}>
                                 OpenAI镜像站使用声明
                             </div>
-
                             <div className={styles.desc}>
-                                服务于不会科学上网的用户，方便使用
+                                ChatGpt  3.5  和 4.0 都有需要可以联系！
                             </div>
                             <div className={styles.desc}>
-                                您只需在 左下角 设置您的API 秘钥
+                                服务于不会科学上网的用户，方便使用！
                             </div>
                             <div className={styles.desc}>
-                                即可使用OpenAI chatGpt进行对话。
+                                您只需在 左下角 设置您的API 秘钥！
                             </div>
                             <div className={styles.desc}>
-                                API不会过期，是与您账号进行绑定的。
+                                即可使用OpenAI chatGpt进行对话！
                             </div>
                             <div className={styles.desc}>
-                                只是无需您无需科学上网，就可以使用。
+                                只是无需您无需科学上网，就可以使用！
                             </div>
                             <div className={styles.desc}>
-                                ChatGpt可回答120W字的问题。
+                                ChatGpt官网更新后可用额度80W字！
                             </div>
                             <div className={styles.desc}>
-                                使用完后，您可重新购买账号API。
+                                使用完后，您可重新购买账号API！
+                            </div>
+                            <div className={styles.desc}>
+                                近期因官方排查，网络不稳定的情况！
                             </div>
                             <div className={styles.desc}>
                                 如有问题，请联系微信：OpenAicome
