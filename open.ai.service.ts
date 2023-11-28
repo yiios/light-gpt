@@ -21,7 +21,7 @@ export const generateImageWithText = async (
     };
     try {
         const res = await fetch(
-            `https://206.119.74.200/v1/images/generations`,
+            `https://api.xiaoyukefu.com/v1/images/generations`,
             requestInit
         ).then(async (response) => {
             if (!response.ok) {
@@ -61,7 +61,7 @@ export const chatWithGptTurbo = async (
 
     try {
         const res = await fetch(
-            `https://206.119.74.200/v1/chat/completions`,
+            `https://api.xiaoyukefu.com/v1/chat/completions`,
             requestInit
         ).then(async (response) => {
             if (!response.ok) {
@@ -105,7 +105,7 @@ export const chatWithGptTurboByProxy = async (
 
 export const getCurrentApiKeyBilling = async (apiKey: string) => {
     const res = await fetch(
-        `https://206.119.74.200/dashboard/billing/credit_grants`,
+        `https://api.xiaoyukefu.com/dashboard/billing/credit_grants`,
         {
             headers: {
                 'Content-Type': 'application/json',
